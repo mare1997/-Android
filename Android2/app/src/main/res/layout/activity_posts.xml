@@ -10,7 +10,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="Create"
         android:onClick="btnCreatePostActivity"
         />
@@ -18,7 +17,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="Read"
         android:onClick="btnReadPostActivity"
         />
@@ -27,16 +25,8 @@
         android:id="@+id/button2"
         android:layout_width="101dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="Settings"
         android:onClick="btnSettingsActivity"
         />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Login"
-        android:onClick="btnLoginActivity"
-        />
 </LinearLayout>

@@ -36,11 +36,7 @@ public class PostsActivity extends AppCompatActivity {
     protected  void onDestroy() {
         super.onDestroy();
     }
-    public void btnLoginActivity(View view){
-        Intent start = new Intent(this,LoginActivity.class);
-        startActivity(start);
 
-    }
     public void btnCreatePostActivity(View view){
         Intent start = new Intent(this,CreatePostActivity.class);
         startActivity(start);
