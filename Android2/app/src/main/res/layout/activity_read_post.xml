@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.android.android.ReadPostActivity"
-    android:orientation="vertical">
+    android:id="@+id/read_DL"
+    tools:context="com.android.android.ReadPostActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarRead"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#E6E6FA">
+    </android.support.v7.widget.Toolbar>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -86,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/like"
-            app:srcCompat="@mipmap/like50" />
+            app:srcCompat="@drawable/like50" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -105,7 +122,7 @@
             android:layout_marginStart="26dp"
             android:layout_toEndOf="@+id/textView2"
             android:contentDescription="@string/dislike"
-            app:srcCompat="@mipmap/dislike50" />
+            app:srcCompat="@drawable/dislike50" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -137,49 +154,42 @@
 
         />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="92dp">
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="vertical">
+         <ListView
+             android:id="@+id/readpost_list_view_comment"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            app:srcCompat="@mipmap/ic_launcher" />
-
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="15dp"
-            android:layout_toEndOf="@+id/imageView3"
-            android:text="Author"
-            tools:layout_editor_absoluteX="139dp"
-            tools:layout_editor_absoluteY="31dp" />
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/textView5"
-            android:layout_below="@+id/textView5"
-            android:text="Title"
-            tools:layout_editor_absoluteX="139dp"
-            tools:layout_editor_absoluteY="31dp" />
-
-        <TextView
-            android:id="@+id/textView7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/textView8"
-            android:layout_centerVertical="true"
-            android:text="Description"
-            tools:layout_editor_absoluteX="139dp"
-            tools:layout_editor_absoluteY="31dp" />
-    </RelativeLayout>
+         </ListView>
 
 
-</LinearLayout>
+     </LinearLayout>
+
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        app:headerLayout="@layout/navigation_drawer"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+
+        >
+        <ListView
+            android:layout_marginTop="120dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contextClickable="true"
+            android:entries="@array/nav_drawer"
+            android:choiceMode="singleChoice"
+            android:id="@+id/read_post_list"
+            android:background="@color/colorDarkCrem"
+            android:divider="@color/darkGray"
+
+            />
+
+    </android.support.design.widget.NavigationView>
+</android.support.v4.widget.DrawerLayout>

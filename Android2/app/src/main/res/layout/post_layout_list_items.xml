@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <ImageView
+        android:id="@+id/item_icon"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"
+        android:contentDescription="@null"
+        android:src="@drawable/picture" />
+    <TextView
+        android:id="@+id/title_post_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:gravity="center_vertical"
+        android:text="Title"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:layout_marginTop="15dp"
+        android:layout_toRightOf="@+id/item_icon"
+        android:layout_toEndOf="@+id/item_icon"
+        android:padding="5dp"/>
+
+    <TextView android:id="@+id/date_post_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title_post_list"
+        android:layout_toRightOf="@+id/item_icon"
+        android:layout_toEndOf="@+id/item_icon"
+        android:text="Date"
+        android:textStyle="bold"
+        android:padding="2dp"/>
+
+</RelativeLayout>

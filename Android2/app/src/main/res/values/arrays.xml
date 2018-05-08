@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="nav_drawer">
+        <item>Posts</item>
+        <item>Settings</item>
+    </string-array>
+
+    <string-array name="pref_sortP_entries">
+        <item>Popularty</item>
+        <item>Date</item>
+
+    </string-array>
+
+    <string-array name="pref_sortP_values">
+        <item>Popularty</item>
+        <item>Date</item>
+    </string-array>
+
+</resources>

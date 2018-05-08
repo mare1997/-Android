@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/settings"
+        android:title="@string/settings"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:icon="@drawable/settings"
+
+        />
+
+
+    <item android:id="@+id/yes"
+        android:icon="@drawable/yes"
+        android:title="@string/yes"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/no"
+        android:icon="@drawable/cancel"
+        android:title="@string/cancel"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"/>
+</menu>
