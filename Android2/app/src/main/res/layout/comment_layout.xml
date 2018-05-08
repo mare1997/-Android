@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/like"
-            android:src="@drawable/like-24" />
+            android:src="@drawable/like24" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,7 +75,7 @@
             android:layout_marginStart="26dp"
             android:layout_toEndOf="@+id/textView2"
             android:contentDescription="@string/dislike"
-            android:src="@drawable/dislike-24"/>
+            android:src="@drawable/dislike24"/>
 
         <TextView
             android:layout_width="wrap_content"

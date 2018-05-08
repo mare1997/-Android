@@ -3,6 +3,7 @@ package com.android.android;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -91,13 +92,20 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         newUser.setUsername("newUsername");
 
         Date currentDate = Calendar.getInstance().getTime();
+        Post post2 = new Post();
+        post2.setAuthor(newUser);
+        post2.setTitle("Titdbaagdgagatle");
+        post2.setDate(currentDate);
+        post2.setLikes(50);
+        post2.setDislikes(1232);
+        posts.add(post2);
         Post post = new Post();
         post.setAuthor(newUser);
         post.setTitle("Title");
         post.setDate(currentDate);
-        post.setLikes(10);
+        post.setLikes(100);
         post.setDislikes(1);
-        posts.add(post);
+
         Post post1 = new Post();
         post1.setAuthor(newUser);
         post1.setTitle("TitleTitle");
@@ -105,11 +113,12 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         post1.setLikes(50);
         post1.setDislikes(2);
         posts.add(post1);
+        posts.add(post);
 
 
 
 
-        //sortPosts();
+        sortPosts();
         PostAdapter postListAdapter = new PostAdapter(this, posts);
         ListView listView = findViewById(R.id.post_list_view);
         listView.setAdapter(postListAdapter);
@@ -150,21 +159,26 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
 
 
     public void sortPosts(){
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sortPost = sharedPreferences.getString(getString(R.string.sortP), "Popularity");
+
+
         switch (sortPost){
-            case "Popularity":sortPostsByPopulartiy();
+            case "Popularity":sortPostsByPopularity();
             case "Date":sortByDate();
         }
     }
-    public void sortPostsByPopulartiy(){
+    public void sortPostsByPopularity(){
+        Toast.makeText(this, posts.toString(), Toast.LENGTH_SHORT).show();
         Collections.sort(posts, new Comparator< Post >() {
             @Override
             public int compare(Post post, Post t1) {
-                return post.getPopularity()- t1.getPopularity();
+                return post.getPopularity() - t1.getPopularity();
             }
 
 
         });
+        Toast.makeText(this, posts.toString(), Toast.LENGTH_SHORT).show();
     }
     public void sortByDate(){
         Collections.sort(posts, new Comparator<Post>() {

@@ -19,6 +19,7 @@
         android:title="Sort posts"
         android:key="sort_posts">
         <ListPreference
+
             android:dialogTitle="@string/popularity"
             android:entries="@array/pref_sortP_entries"
             android:entryValues="@array/pref_sortP_values"

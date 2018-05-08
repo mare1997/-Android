@@ -11,7 +11,7 @@
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
-    <string name="popularity">Popularity</string>
+    <string name="popularity">Sort</string>
     <string name="sortP">Sort posts</string>
     <string name="sortC">Sort comments</string>
 </resources>

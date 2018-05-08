@@ -23,14 +23,16 @@ public class SettingsActivity extends PreferenceActivity implements DatePickerDi
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 new PrefsFragment()).commit();
         Preference btnDateFilter = (Preference) findPreference("btnDateFilter");
-        btnDateFilter.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        /*btnDateFilter.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @TargetApi(Build.VERSION_CODES.HONEYCOMB)
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 showDateDialog();
                 return false;
             }
-        });
+        });*/
+
+
     }
     @Override
     protected  void onStart() {
