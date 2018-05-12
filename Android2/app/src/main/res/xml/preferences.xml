@@ -2,53 +2,31 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="Displays a posta from that date"
-        android:key="dbtnDateFilter"
+        android:title="@string/sortP"
+        android:key="@string/sortP"
         >
-        <Preference
-            android:key="btnDateFilter"
-            android:summary="Reschedule using current setting"
-            android:title="Reschedule" >
-
-        </Preference>
-
-
-
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:title="Sort posts"
-        android:key="sort_posts">
-        <ListPreference
-
-            android:dialogTitle="@string/popularity"
-            android:entries="@array/pref_sortP_entries"
-            android:entryValues="@array/pref_sortP_values"
-            android:key="@string/sortP"
-            android:title="@string/popularity"
-            android:summary="%s"
-            android:defaultValue="1"/>
-
-
-
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/sort_posts_date_key"
+        android:title="@string/sort_posts_date" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/sort_posts_popu_key"
+        android:title="@string/sort_posts_popu" />
 
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="Sort comments"
-        android:key="sort_comment">
-        <ListPreference
-            android:dialogTitle="@string/popularity"
-            android:entries="@array/pref_sortP_entries"
-            android:entryValues="@array/pref_sortP_values"
-            android:key="@string/sortC"
-            android:title="@string/popularity"
-            android:summary="%s"
-            android:defaultValue="1"/>
+        android:title="@string/sortC"
+        android:key="@string/sortC"
 
-
-
-
+        >
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/sort_comm_date_key"
+        android:title="@string/sort_comm_date" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/sort_comm_popu_key"
+        android:title="@string/sort_comm_popu" />
     </PreferenceCategory>
-
-
-
 </PreferenceScreen>

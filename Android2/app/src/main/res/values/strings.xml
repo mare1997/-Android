@@ -14,4 +14,12 @@
     <string name="popularity">Sort</string>
     <string name="sortP">Sort posts</string>
     <string name="sortC">Sort comments</string>
+    <string name="sort_posts_date_key">Sort_posts_by_Date</string>
+    <string name="sort_posts_popu_key">Sort_posts_by_Popularity</string>
+    <string name="sort_comm_date_key">Sort_comments_by_Date</string>
+    <string name="sort_comm_popu_key">Sort_comments_by_Popularity</string>
+    <string name="sort_posts_date">Sort posts by Date</string>
+    <string name="sort_posts_popu">Sort posts by Popularity</string>
+    <string name="sort_comm_date">Sort comments by Date</string>
+    <string name="sort_comm_popu">Sort comments by Popularity</string>
 </resources>
