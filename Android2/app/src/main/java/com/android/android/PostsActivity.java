@@ -1,10 +1,16 @@
 package com.android.android;
 
+import android.support.v4.app.LoaderManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +24,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.android.adapters.PostAdapter;
+import com.android.android.database.PostContentProvider;
+import com.android.android.database.PostSQLiteHelper;
 import com.android.android.model.Post;
 import com.android.android.model.User;
 
@@ -27,7 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-public class PostsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class PostsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     private DrawerLayout drawerLayout;
     private ListView listView;
     private String[] lista;
@@ -36,7 +44,8 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
     private SharedPreferences sharedPreferences;
     private ActionBarDrawerToggle toggle;
     private ArrayList<Post> posts = new ArrayList<Post>();
-
+    public static String USER_KEY = "rs.android2.USER_KEY";
+    private SimpleCursorAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +97,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             }
         });
 
-
+        /*
         User newUser = new User();
         newUser.setUsername("newUsername");
         Date date=new Date(2018,05,1);
@@ -131,7 +140,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
                 startActivity(intent);
             }
         });
-
+        */
 
     }
     @Override
@@ -159,10 +168,32 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         super.onDestroy();
     }
 
+    public void init(){
+        ListView listView = findViewById(R.id.post_list_view);
+        getLoaderManager().initLoader(0, null, (android.app.LoaderManager.LoaderCallbacks<Cursor>)this);
+        String[] from = new String[] { PostSQLiteHelper.COLUMN_TITLE, PostSQLiteHelper.COLUMN_DATE };
+        int[] to = new int[] {R.id.title_post_list, R.id.date_post_list};
+        adapter = new SimpleCursorAdapter(this, R.layout.post_layout_list_items, null, from,
+                to, 0);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
+                Intent intent = new Intent(PostsActivity.this, ReadPostActivity.class);
+                Uri todoUri = Uri.parse(PostContentProvider.CONTENT_URI_POST + "/" + id);
+                intent.putExtra("id", todoUri);
+                startActivity(intent);
+            }
+        });
+
+
+
+
+    }
 
     public void sortPosts(){
         sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
-        sortPostbyDate =sharedPreferences.getBoolean(getString(R.string.sort_comm_date_key),false);
+        sortPostbyDate =sharedPreferences.getBoolean(getString(R.string.sort_posts_date_key),false);
         sortPostbyPppularity=sharedPreferences.getBoolean(getString(R.string.sort_posts_popu),false);
         if(sortPostbyDate == true){
             sortByDate();
@@ -235,5 +266,32 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         getSupportActionBar().setTitle(title);
 
     }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] allColumns = { PostSQLiteHelper.COLUMN_ID,
+                PostSQLiteHelper.COLUMN_TITLE, PostSQLiteHelper.COLUMN_DATE, PostSQLiteHelper.COLUMN_DESCRIPTION, PostSQLiteHelper.COLUMN_LIKES, PostSQLiteHelper.COLUMN_DISLIKES,
+                 PostSQLiteHelper.COLUMN_LOCATION, PostSQLiteHelper.COLUMN_PHOTO
+        };
+
+        CursorLoader cursor = new CursorLoader(this, PostContentProvider.CONTENT_URI_POST,
+                allColumns, null, null, null);
+
+        return cursor;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        adapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.swapCursor(null);
+    }
+
+
+
+
+
 
 }
