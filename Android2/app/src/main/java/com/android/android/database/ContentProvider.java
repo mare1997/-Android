@@ -162,8 +162,8 @@ public class ContentProvider extends android.content.ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match){
             // Since we're inserting a single user, there's no need to match USER_ID URI
-           /* case USERS:
-                return insertUser(uri, values);*/
+            case USERS:
+                return insertUser(uri, values);
             // Since we're inserting a single comment, there's no need to match COMMENT_ID URI
           /*  case COMMENTS:
                 return insertComment(uri, values);*/
@@ -211,9 +211,10 @@ public class ContentProvider extends android.content.ContentProvider {
         String location = values.getAsString(PostContract.PostEntry.COLUMN_LOCATION);
         String likes = values.getAsString(PostContract.PostEntry.COLUMN_LIKES);
         String dislikes = values.getAsString(PostContract.PostEntry.COLUMN_DISLIKES);
-        if (title == null || description == null) {
+
+        /*if (title == null || description == null) {
             throw new IllegalArgumentException("Posts arguments cannot be empty");
-        }
+        }*/
         //Gain write access to the database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         //Insert a new post

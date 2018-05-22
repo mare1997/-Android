@@ -40,9 +40,14 @@ public class PostAdapter extends ArrayAdapter<Post> {
         TextView date_view = view.findViewById(R.id.date_post_list);
         TextView title_view = view.findViewById(R.id.title_post_list);
 
-
+        String dateTime = null;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        String dateTime = dateFormat.format(post.getDate());
+        if(post.getDate() != null){
+            dateTime = dateFormat.format(post.getDate());
+        }else{
+            dateTime = "15.11.2014";
+        }
+
 
 
         date_view.setText(dateTime);

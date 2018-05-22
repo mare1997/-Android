@@ -17,7 +17,7 @@ public class Post {
     private Bitmap photo;
     private User author;
     private Date date;
-    private Location location;
+    private String location;
     private List<Tag> tags;
     private List<Comment> comments;
     private int likes;
@@ -39,8 +39,22 @@ public class Post {
     }
 
     public Post(int id, String title, String description, Bitmap photo,
-                User author, Date date, Location location, List<Tag> tags, List<Comment> comments, int likes, int dislikes) {
+                User author, Date date, String location, List<Tag> tags, List<Comment> comments, int likes, int dislikes) {
         this.id = id;
+        this.title = title;
+        this.description = description;
+        this.photo = photo;
+        this.author = author;
+        this.date = date;
+        this.location = location;
+        this.tags = tags;
+        this.comments = comments;
+        this.likes = likes;
+        this.dislikes = dislikes;
+    }
+    public Post( String title, String description, Bitmap photo,
+                User author, Date date, String location, List<Tag> tags, List<Comment> comments, int likes, int dislikes) {
+
         this.title = title;
         this.description = description;
         this.photo = photo;
@@ -101,11 +115,11 @@ public class Post {
         this.date = date;
     }
 
-    public Location getLocation() {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -24,12 +25,15 @@ import android.widget.Toast;
 
 
 import com.android.android.adapters.PostAdapter;
+import com.android.android.database.ContentProvider;
 import com.android.android.database.DatabaseHelper;
 import com.android.android.database.HelperDatabaseRead;
 import com.android.android.database.PostContract;
 import com.android.android.database.UserContract;
 import com.android.android.model.Post;
+import com.android.android.model.User;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.Calendar;
@@ -102,22 +106,20 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             }
         });
 
-        // 1. get reference to SQLiteDatabase
-        mDbHelper = new DatabaseHelper(this);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        // 2. create ContentValues to add key "column"/value
-        ContentValues values = new ContentValues();
-        values.put("COLUMN_TITLE", "marko"); // set name
-        values.put("COLUMN_DESCRIPTION", "marko");
-        Date currentDate = Calendar.getInstance().getTime();
-        values.put("COLUMN_DATE", currentDate.toString());
-        // 3. insert
-        db.insert(PostContract.PostEntry.TABLE_NAME, null,values);
 
-
-
-        Toast.makeText(this,currentDate.toString(),Toast.LENGTH_LONG).show();
         helperDatabaseRead = new HelperDatabaseRead();
+        User u=null;
+        for(User usser :helperDatabaseRead.loadUsersFromDatabase(this)){
+            if(usser.getId() == 1){
+                u=usser;
+            }
+        }
+        String date="15.05.2016";
+        Date d=helperDatabaseRead.convertStringToDate(date);
+        Post p=new Post("caocao","caocao",null,u,d,"aaa",null,null,15,1 );
+        helperDatabaseRead.insertPost(p,this);
+
+
         posts = helperDatabaseRead.loadPostsFromDatabase(this);
         Toast.makeText(this,posts.get(0).getDate() + " was selected",Toast.LENGTH_SHORT).show();
         PostAdapter postListAdapter = new PostAdapter(this, posts);
