@@ -18,11 +18,11 @@ public class Comment {
     private int post;
     private int likes;
     private int dislikes;
-    private AsyncTask.Status status;
-    //private Status status;
+
+
     public Comment(){}
 
-    public Comment(int id, String title, String description, User author, Date date, int post, int likes, int dislikes, AsyncTask.Status status) {
+    public Comment(int id, String title, String description, User author, Date date, int post, int likes, int dislikes) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -31,9 +31,9 @@ public class Comment {
         this.post = post;
         this.likes = likes;
         this.dislikes = dislikes;
-        this.status = status;
+
     }
-    public Comment( String title, String description, User author, Date date, int post, int likes, int dislikes, AsyncTask.Status status) {
+    public Comment( String title, String description, User author, Date date, int post, int likes, int dislikes) {
 
         this.title = title;
         this.description = description;
@@ -42,7 +42,7 @@ public class Comment {
         this.post = post;
         this.likes = likes;
         this.dislikes = dislikes;
-        this.status = status;
+
     }
     public int getId() {
         return id;
@@ -108,11 +108,5 @@ public class Comment {
         this.dislikes = dislikes;
     }
 
-    public AsyncTask.Status getStatus() {
-        return status;
-    }
 
-    public void setStatus(AsyncTask.Status status) {
-        this.status = status;
-    }
 }

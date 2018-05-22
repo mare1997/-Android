@@ -1,6 +1,7 @@
 package com.android.android;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -56,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         String password=textView.getText().toString();
         if(login(username,password) == true){
             Intent startPosts = new Intent(this,PostsActivity.class);
+
+
             startActivity(startPosts);
             finish();
         }else{
@@ -71,6 +74,10 @@ public class LoginActivity extends AppCompatActivity {
         for(User u:users){
             if (u.getUsername().equals(user))
                 if (u.getPassword().equals(pass)) {
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                    SharedPreferences.Editor editor=pref.edit();
+                    editor.putInt("id",u.getId());
+                    editor.apply();
                     return true;
                 }
         }

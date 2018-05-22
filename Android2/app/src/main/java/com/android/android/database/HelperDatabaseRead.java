@@ -160,7 +160,7 @@ public class HelperDatabaseRead {
                 }
 
 
-                comments.add(new Comment(currentId, title, description, author, cDate ,post, likes,dislikes, null));
+                comments.add(new Comment(currentId, title, description, author, cDate ,post, likes,dislikes));
             }
         }finally {
             cursor.close();

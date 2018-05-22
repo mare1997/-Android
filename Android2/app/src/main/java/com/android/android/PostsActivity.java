@@ -114,10 +114,10 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
                 u=usser;
             }
         }
-        String date="15.05.2016";
+        /*String date="15.05.2016";
         Date d=helperDatabaseRead.convertStringToDate(date);
         Post p=new Post("caocao","caocao",null,u,d,"aaa",null,null,15,1 );
-        helperDatabaseRead.insertPost(p,this);
+        helperDatabaseRead.insertPost(p,this);*/
 
 
         posts = helperDatabaseRead.loadPostsFromDatabase(this);
@@ -129,6 +129,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(PostsActivity.this,ReadPostActivity.class);
+                intent.putExtra("id",i+1);
                 startActivity(intent);
             }
         });

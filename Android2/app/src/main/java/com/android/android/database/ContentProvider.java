@@ -165,8 +165,8 @@ public class ContentProvider extends android.content.ContentProvider {
             case USERS:
                 return insertUser(uri, values);
             // Since we're inserting a single comment, there's no need to match COMMENT_ID URI
-          /*  case COMMENTS:
-                return insertComment(uri, values);*/
+           case COMMENTS:
+                return insertComment(uri, values);
             // Since we're inserting a single post, there's no need to match POST_ID URI
             case POSTS:
                 return insertPost(uri, values);
@@ -196,6 +196,29 @@ public class ContentProvider extends android.content.ContentProvider {
         // Check if insertion is successful, -1 = failed;
         if(id == -1){
             Toast.makeText(getContext(), "Failed to add a new user", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return ContentUris.withAppendedId(uri, id);
+    }
+    private Uri insertComment(Uri uri, ContentValues values) {
+        //DATA VALIDATION
+        String title = values.getAsString(CommentContract.CommentEntry.COLUMN_TITLE);
+        String description = values.getAsString(CommentContract.CommentEntry.COLUMN_DESCRIPTION);
+        String postId = values.getAsString(CommentContract.CommentEntry.COLUMN_POST_ID);
+        String authorId = values.getAsString(CommentContract.CommentEntry.COLUMN_AUTHOR_ID);
+        String data = values.getAsString(CommentContract.CommentEntry.COLUMN_DATE);
+
+        String likes = values.getAsString(CommentContract.CommentEntry.COLUMN_LIKES);
+        String dislikes = values.getAsString(CommentContract.CommentEntry.COLUMN_DISLIKES);
+
+
+        //Gain write access to the database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        //Insert a new post
+        Long id = database.insert(CommentContract.CommentEntry.TABLE_NAME, null, values);
+        //check if insertion is successful, -1 = failed
+        if (id == -1) {
+            Toast.makeText(getContext(), "Failed to add new comment", Toast.LENGTH_SHORT).show();
             return null;
         }
         return ContentUris.withAppendedId(uri, id);

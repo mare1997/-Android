@@ -16,7 +16,7 @@
              />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/authorComm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -65,7 +65,7 @@
             android:layout_marginStart="11dp"
             android:layout_toEndOf="@+id/imageButton1"
             android:text="5"
-            android:id="@+id/textView2" />
+            android:id="@+id/likeComm" />
 
         <ImageButton
             android:id="@+id/imageButton2"
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="26dp"
-            android:layout_toEndOf="@+id/textView2"
+            android:layout_toEndOf="@+id/likeComm"
             android:contentDescription="@string/dislike"
             android:src="@drawable/dislike24"/>
 
@@ -84,7 +84,7 @@
             android:layout_marginStart="11dp"
             android:layout_toEndOf="@+id/imageButton2"
             android:text="2"
-            android:id="@+id/textView6" />
+            android:id="@+id/dislkeComm" />
 
     </RelativeLayout>
 

@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/read_DL">
-    <LinearLayout
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -23,6 +24,11 @@
         android:background="#E6E6FA">
     </android.support.v7.widget.Toolbar>
     </LinearLayout>
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="28.03.2018."
@@ -41,7 +48,7 @@
      </RelativeLayout>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/titleRead"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -64,7 +71,7 @@
                 app:srcCompat="@mipmap/ic_launcher" />
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/ReadAuthor"
                 android:layout_width="214dp"
                 android:layout_height="20dp"
                 android:layout_centerHorizontal="true"
@@ -81,7 +88,7 @@
         app:srcCompat="@mipmap/ic_launcher"
         />
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -90,7 +97,7 @@
         tools:layout_editor_absoluteX="29dp"
         tools:layout_editor_absoluteY="118dp" />
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/tag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -110,13 +117,14 @@
             app:srcCompat="@drawable/like24" />
 
         <TextView
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="11dp"
             android:layout_toEndOf="@+id/imageButton1"
             android:text="5"
-            android:id="@+id/textView2" />
+            android:id="@+id/likes" />
 
         <ImageButton
             android:id="@+id/imageButton2"
@@ -124,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="26dp"
-            android:layout_toEndOf="@+id/textView2"
+            android:layout_toEndOf="@+id/likes"
             android:contentDescription="@string/dislike"
             app:srcCompat="@drawable/dislike24" />
 
@@ -135,19 +143,19 @@
             android:layout_marginStart="11dp"
             android:layout_toEndOf="@+id/imageButton2"
             android:text="2"
-            android:id="@+id/textView6" />
+            android:id="@+id/dislikes" />
 
     </RelativeLayout>
 
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/titleComm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:hint="Title" />
     <EditText
-        android:id="@+id/editText4"
+        android:id="@+id/descComm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Comment" />
@@ -155,6 +163,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add comment"
+        android:id="@+id/btnAddComm"
 
         />
 
@@ -174,7 +183,7 @@
      </LinearLayout>
 
     </LinearLayout>
-
+    </android.support.v4.widget.NestedScrollView>
     <android.support.design.widget.NavigationView
         app:headerLayout="@layout/navigation_drawer"
         android:layout_width="wrap_content"

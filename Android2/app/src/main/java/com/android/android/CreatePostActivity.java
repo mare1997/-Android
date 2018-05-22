@@ -1,6 +1,7 @@
 package com.android.android;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,7 +14,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.android.database.HelperDatabaseRead;
+import com.android.android.model.Post;
+import com.android.android.model.User;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class CreatePostActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -21,7 +32,9 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
     private ListView listView;
     private String[] lista;
     private ActionBarDrawerToggle toggle;
-
+    int idUser = -1;
+    private TextView textView;
+    private HelperDatabaseRead helperDatabaseRead;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +81,8 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
 
             }
         });
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+        idUser = pref.getInt("id",-1);
 
 
 
@@ -129,6 +144,7 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
             startActivity(new Intent(this, SettingsActivity.class));
         }
         if(item.getItemId() == R.id.yes){
+            createPost();
             Toast.makeText(this,"Created",Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, PostsActivity.class));
         }
@@ -153,5 +169,39 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
         getSupportActionBar().setTitle(title);
 
     }
+    public void createPost(){
+        helperDatabaseRead = new HelperDatabaseRead();
+        textView=(TextView)findViewById(R.id.createTitle);
+        String title=textView.getText().toString();
+        textView=(TextView)findViewById(R.id.createDesc);
+        String desc=textView.getText().toString();
+        textView=(TextView)findViewById(R.id.createTags);
+        String tag=textView.getText().toString();
+        User u=null;
+        for(User uu:helperDatabaseRead.loadUsersFromDatabase(this)){
+            if(uu.getId() == idUser){
+                u=uu;
+            }
+        }
+        Post p =new Post(title,desc,null,u,getDateTime(),"gaga",null,null,0,0);
+        helperDatabaseRead.insertPost(p,this);
+    }
+    private Date getDateTime(){
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Date date = new Date();
+        String sDate= dateFormat.format(date);
+        Toast.makeText(this,sDate,Toast.LENGTH_SHORT).show();
+        return  convertStringToDate(sDate);
+    }
+    public Date convertStringToDate(String dtStart){
 
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+        try {
+            Date date = format.parse(dtStart);
+            return date;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
