@@ -260,6 +260,11 @@ public class ContentProvider extends android.content.ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         return 0;
     }
+    public void deletePost(int id){
+        database=mDbHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM " + PostContract.PostEntry.TABLE_NAME + " WHERE " + PostContract.PostEntry._ID + " = " + id + ";");
 
+
+    }
 
 }

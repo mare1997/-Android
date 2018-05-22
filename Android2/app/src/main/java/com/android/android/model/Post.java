@@ -7,6 +7,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class Post {
     private User author;
     private Date date;
     private String location;
-    private List<Tag> tags;
-    private List<Comment> comments;
+    private ArrayList<Tag> tags;
+    private ArrayList<Comment> comments;
     private int likes;
     private int dislikes;
 
@@ -39,7 +40,7 @@ public class Post {
     }
 
     public Post(int id, String title, String description, Bitmap photo,
-                User author, Date date, String location, List<Tag> tags, List<Comment> comments, int likes, int dislikes) {
+                User author, Date date, String location, ArrayList<Tag> tags, ArrayList<Comment> comments, int likes, int dislikes) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -53,7 +54,7 @@ public class Post {
         this.dislikes = dislikes;
     }
     public Post( String title, String description, Bitmap photo,
-                User author, Date date, String location, List<Tag> tags, List<Comment> comments, int likes, int dislikes) {
+                User author, Date date, String location, ArrayList<Tag> tags, ArrayList<Comment> comments, int likes, int dislikes) {
 
         this.title = title;
         this.description = description;
@@ -123,19 +124,19 @@ public class Post {
         this.location = location;
     }
 
-    public List<Tag> getTags() {
+    public ArrayList<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(ArrayList<Tag> tags) {
         this.tags = tags;
     }
 
-    public List<Comment> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
     }
 

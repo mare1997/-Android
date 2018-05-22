@@ -3,6 +3,9 @@ package com.android.android;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.android.adapters.CommentAdapter;
+import com.android.android.database.ContentProvider;
+import com.android.android.database.DatabaseHelper;
 import com.android.android.database.HelperDatabaseRead;
+import com.android.android.database.PostContract;
 import com.android.android.model.Comment;
 import com.android.android.model.Post;
 import com.android.android.model.Tag;
@@ -47,7 +53,7 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_post);
-        Toast.makeText(this,"CreatePostActivity",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"ReadPostActivity",Toast.LENGTH_SHORT).show();
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbarRead);
         setSupportActionBar(toolbar);
         drawerLayout =(DrawerLayout) findViewById(R.id.read_DL);
@@ -55,6 +61,19 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
                 R.string.open,R.string.close){
             @Override
             public void onDrawerOpened(View drawerView) {
+                helperDatabaseRead = new HelperDatabaseRead();
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                int idUser = pref.getInt("id",-1);
+                User u=null;
+                for(User user: helperDatabaseRead.loadUsersFromDatabase(ReadPostActivity.this)){
+                    if(user.getId() == idUser){
+                        u=user;
+                    }
+                }
+                textView=(TextView) findViewById(R.id.nameNav);
+                textView.setText(u.getName());
+                textView=(TextView) findViewById(R.id.usernameNav);
+                textView.setText(u.getUsername());
                 Toast.makeText(ReadPostActivity.this,"Drawer Opened",Toast.LENGTH_SHORT).show();
             }
 
@@ -84,6 +103,15 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
                 }
                 if(position == 1){
                     startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                }
+                if(position == 2){
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                    SharedPreferences.Editor editor=pref.edit();
+                    editor.clear();
+                    editor.apply();
+                    Intent start = new Intent(ReadPostActivity.this,LoginActivity.class);
+                    startActivity(start);
+                    finish();
                 }
 
             }
@@ -128,12 +156,7 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         textView=(TextView)findViewById(R.id.date);
         String date = new SimpleDateFormat("dd.MM.yyyy").format(post.getDate());
         textView.setText(date);
-        ArrayList<Comment> mComm=new ArrayList<Comment>();
-        for(Comment c:helperDatabaseRead.loadCommentsFromDatabase(this)){
-            if(c.getPost() == post.getId())
-                mComm.add(c);
-        }
-        CommentAdapter commentAdapter=new CommentAdapter(this,mComm);
+        CommentAdapter commentAdapter=new CommentAdapter(this,post.getComments());
         ListView listView = findViewById(R.id.readpost_list_view_comment);
         listView.setAdapter(commentAdapter);
 
@@ -151,38 +174,9 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
     }
     @Override
     protected  void onResume() {
-        ArrayList<Comment> mComm=new ArrayList<Comment>();
-        for(Comment c:helperDatabaseRead.loadCommentsFromDatabase(this)){
-            if(c.getPost() == post.getId())
-                mComm.add(c);
-        }
-        CommentAdapter commentAdapter=new CommentAdapter(this,mComm);
-        ListView listView = findViewById(R.id.readpost_list_view_comment);
-        listView.setAdapter(commentAdapter);
-        helperDatabaseRead = new HelperDatabaseRead();
 
-        Button b = (Button) findViewById(R.id.btnAddComm);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                textView=(TextView)findViewById(R.id.titleComm);
-                String title=textView.getText().toString();
-                textView=(TextView)findViewById(R.id.descComm);
-                String desc=textView.getText().toString();
-                SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
-                idUser = pref.getInt("id",-1);
-                User u=null;
-                for(User uu:helperDatabaseRead.loadUsersFromDatabase(ReadPostActivity.this)){
-                    if(uu.getId() == idUser){
-                        u=uu;
-                    }
-                }
-                Comment c= new Comment(title,desc,u,getDateTime(),id,0,0);
-                helperDatabaseRead.insertComment(c,ReadPostActivity.this);
 
-            }
-        });
 
         super.onResume();
     }
@@ -232,12 +226,14 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         }
         if(item.getItemId() == R.id.delete){
             Toast.makeText(this,"Deleted",Toast.LENGTH_SHORT).show();
+
+
             startActivity(new Intent(this, PostsActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
 
-/*    public void btnAddComm(View view) {
+    public void btnAddComment(View view) {
         helperDatabaseRead = new HelperDatabaseRead();
         textView=(TextView)findViewById(R.id.titleComm);
         String title=textView.getText().toString();
@@ -253,7 +249,10 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         }
         Comment c= new Comment(title,desc,u,getDateTime(),id,0,0);
         helperDatabaseRead.insertComment(c,this);
-    }*/
+        Intent intent = new Intent(ReadPostActivity.this,ReadPostActivity.class);
+
+        startActivity(intent);
+    }
     private Date getDateTime(){
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date date = new Date();
@@ -272,4 +271,5 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         }
         return null;
     }
+
 }

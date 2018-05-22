@@ -49,6 +49,19 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
                 R.string.open,R.string.close){
             @Override
             public void onDrawerOpened(View drawerView) {
+                helperDatabaseRead = new HelperDatabaseRead();
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                int idUser = pref.getInt("id",-1);
+                User u=null;
+                for(User user: helperDatabaseRead.loadUsersFromDatabase(CreatePostActivity.this)){
+                    if(user.getId() == idUser){
+                        u=user;
+                    }
+                }
+                textView=(TextView) findViewById(R.id.nameNav);
+                textView.setText(u.getName());
+                textView=(TextView) findViewById(R.id.usernameNav);
+                textView.setText(u.getUsername());
                 Toast.makeText(CreatePostActivity.this,"Drawer Opened",Toast.LENGTH_SHORT).show();
             }
 
@@ -77,6 +90,15 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
                 }
                 if(position == 1){
                     startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                }
+                if(position == 2){
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                    SharedPreferences.Editor editor=pref.edit();
+                    editor.clear();
+                    editor.apply();
+                    Intent start = new Intent(CreatePostActivity.this,LoginActivity.class);
+                    startActivity(start);
+                    finish();
                 }
 
             }

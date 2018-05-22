@@ -20,7 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -53,7 +55,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
     private HelperDatabaseRead helperDatabaseRead;
     private ArrayList<Post> posts = new ArrayList<Post>();
     private DatabaseHelper mDbHelper;
-    ;
+    private TextView textView;
     private SimpleCursorAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,19 +78,40 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onDrawerOpened(View drawerView) {
                 Toast.makeText(PostsActivity.this,"Drawer Opened",Toast.LENGTH_SHORT).show();
+                helperDatabaseRead = new HelperDatabaseRead();
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                int idUser = pref.getInt("id",-1);
+                User u=null;
+                for(User user: helperDatabaseRead.loadUsersFromDatabase(PostsActivity.this)){
+                    if(user.getId() == idUser){
+                        u=user;
+                    }
+                }
+                textView=(TextView) findViewById(R.id.nameNav);
+                textView.setText(u.getName());
+                textView=(TextView) findViewById(R.id.usernameNav);
+                textView.setText(u.getUsername());
+
                 invalidateOptionsMenu();
+
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 Toast.makeText(PostsActivity.this,"Drawer Closed",Toast.LENGTH_SHORT).show();
                 invalidateOptionsMenu();
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                int idUser = pref.getInt("id",-1);
+                drawerLayout.addDrawerListener(toggle);
+                toggle.syncState();
+
+
             }
 
         };
 
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+
+
 
         lista=getResources().getStringArray(R.array.nav_drawer);
         listView = (ListView) findViewById(R.id.create_post_list);
@@ -101,6 +124,15 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
                 }
                 if(position == 1){
                     startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                }
+                if(position == 2){
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+                    SharedPreferences.Editor editor=pref.edit();
+                    editor.clear();
+                    editor.apply();
+                    Intent start = new Intent(PostsActivity.this,LoginActivity.class);
+                    startActivity(start);
+                    finish();
                 }
 
             }
