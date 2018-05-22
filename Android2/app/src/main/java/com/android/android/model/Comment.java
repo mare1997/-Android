@@ -1,5 +1,11 @@
 package com.android.android.model;
 
+import android.os.AsyncTask;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
+
 import java.util.Date;
 
 public class Comment {
@@ -12,10 +18,11 @@ public class Comment {
     private Post post;
     private int likes;
     private int dislikes;
+    private AsyncTask.Status status;
     //private Status status;
+    public Comment(){}
 
-
-    public Comment(int id, String title, String description, User author, Date date, Post post, int likes, int dislikes) {
+    public Comment(int id, String title, String description, User author, Date date, Post post, int likes, int dislikes, AsyncTask.Status status) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -24,6 +31,7 @@ public class Comment {
         this.post = post;
         this.likes = likes;
         this.dislikes = dislikes;
+        this.status = status;
     }
 
     public int getId() {
@@ -88,5 +96,13 @@ public class Comment {
 
     public void setDislikes(int dislikes) {
         this.dislikes = dislikes;
+    }
+
+    public AsyncTask.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(AsyncTask.Status status) {
+        this.status = status;
     }
 }

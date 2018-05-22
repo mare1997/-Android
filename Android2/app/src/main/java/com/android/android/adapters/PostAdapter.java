@@ -7,12 +7,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.android.R;
 import com.android.android.model.Post;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class PostAdapter extends ArrayAdapter<Post> {
@@ -37,9 +40,12 @@ public class PostAdapter extends ArrayAdapter<Post> {
         TextView date_view = view.findViewById(R.id.date_post_list);
         TextView title_view = view.findViewById(R.id.title_post_list);
 
-        String newDate = new SimpleDateFormat("dd.MM.yyyy HH:mm").format(post.getDate());
 
-        date_view.setText(newDate);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        String dateTime = dateFormat.format(post.getDate());
+
+
+        date_view.setText(dateTime);
         title_view.setText(post.getTitle());
 
 

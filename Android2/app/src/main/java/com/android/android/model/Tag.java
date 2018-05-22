@@ -1,17 +1,29 @@
 package com.android.android.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
+
 import java.util.List;
 
-public class Tag {
 
+public class Tag {
     private int id;
     private String name;
     private List<Post> posts;
+
+    public Tag(){
+    }
 
     public Tag(int id, String name, List<Post> posts) {
         this.id = id;
         this.name = name;
         this.posts = posts;
+    }
+
+    public Tag(int id, String name){
+        this.id=id;
+        this.name=name;
     }
 
     public int getId() {
@@ -37,4 +49,6 @@ public class Tag {
     public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
+
+
 }

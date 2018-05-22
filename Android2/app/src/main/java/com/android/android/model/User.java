@@ -2,7 +2,12 @@ package com.android.android.model;
 
 import android.graphics.Bitmap;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
+
 import java.util.List;
+
 
 public class User {
     private int id;
@@ -13,7 +18,15 @@ public class User {
     private List<Post> posts;
     private List<Comment> comments;
 
-    public User(){
+    public User() {
+    }
+
+    public User(int id, String name, Bitmap photo, String username, String password){
+        this.id = id;
+        this.name = name;
+        this.photo = photo;
+        this.username = username;
+        this.password = password;
     }
     public User(int id, String name, Bitmap photo, String username, String password, List<Post> posts, List<Comment> comments) {
         this.id = id;
@@ -80,5 +93,7 @@ public class User {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
+
 
 }

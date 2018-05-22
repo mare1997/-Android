@@ -32,13 +32,12 @@
         <activity android:name=".CreatePostActivity" />
         <activity android:name=".ReadPostActivity" />
         <activity android:name=".SettingsActivity" />
-
-
         <provider
-            android:name=".database.PostContentProvider"
-            android:authorities="post"
+            android:name=".database.ContentProvider"
+            android:authorities="com.example.mare.mareapp"
             android:enabled="true"
-            android:exported="true"></provider>
+            android:exported="false" />
+
     </application>
 
 </manifest>

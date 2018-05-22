@@ -2,7 +2,10 @@ package com.android.android.model;
 
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.nfc.Tag;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.tojc.ormlite.android.annotation.AdditionalAnnotation;
 
 import java.util.Date;
 import java.util.List;
@@ -22,7 +25,21 @@ public class Post {
 
     public Post(){
     }
-    public Post(int id, String title, String description, Bitmap photo, User author, Date date, Location location, List<Tag> tags, List<Comment> comments, int likes, int dislikes) {
+
+
+    public Post(String title, String description, Date date) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+    }
+    public Post(int id, String title, String description, Date date) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+    }
+
+    public Post(int id, String title, String description, Bitmap photo,
+                User author, Date date, Location location, List<Tag> tags, List<Comment> comments, int likes, int dislikes) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -84,7 +101,9 @@ public class Post {
         this.date = date;
     }
 
-    public Location getLocation() { return location; }
+    public Location getLocation() {
+        return location;
+    }
 
     public void setLocation(Location location) {
         this.location = location;
@@ -121,6 +140,4 @@ public class Post {
     public void setDislikes(int dislikes) {
         this.dislikes = dislikes;
     }
-
-    public int getPopularity(){return likes-dislikes; }
 }

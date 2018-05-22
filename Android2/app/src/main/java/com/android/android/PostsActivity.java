@@ -1,20 +1,19 @@
 package com.android.android;
 
-import android.support.v4.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.net.Uri;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,19 +22,23 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+
 import com.android.android.adapters.PostAdapter;
-import com.android.android.database.PostContentProvider;
-import com.android.android.database.PostSQLiteHelper;
+import com.android.android.database.DatabaseHelper;
+import com.android.android.database.HelperDatabaseRead;
+import com.android.android.database.PostContract;
+import com.android.android.database.UserContract;
 import com.android.android.model.Post;
-import com.android.android.model.User;
 
 import java.util.ArrayList;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-public class PostsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+
+public class PostsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private DrawerLayout drawerLayout;
     private ListView listView;
     private String[] lista;
@@ -43,8 +46,10 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
     private boolean sortPostbyPppularity;
     private SharedPreferences sharedPreferences;
     private ActionBarDrawerToggle toggle;
+    private HelperDatabaseRead helperDatabaseRead;
     private ArrayList<Post> posts = new ArrayList<Post>();
-    public static String USER_KEY = "rs.android2.USER_KEY";
+    private DatabaseHelper mDbHelper;
+    ;
     private SimpleCursorAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,39 +102,24 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             }
         });
 
-        /*
-        User newUser = new User();
-        newUser.setUsername("newUsername");
-        Date date=new Date(2018,05,1);
-        Date date2=new Date(2018,03,1);
+        // 1. get reference to SQLiteDatabase
+        mDbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        // 2. create ContentValues to add key "column"/value
+        ContentValues values = new ContentValues();
+        values.put("COLUMN_TITLE", "marko"); // set name
+        values.put("COLUMN_DESCRIPTION", "marko");
         Date currentDate = Calendar.getInstance().getTime();
-        Post post2 = new Post();
-        post2.setAuthor(newUser);
-        post2.setTitle("Ne popularan");
-        post2.setDate(currentDate);
-        post2.setLikes(50);
-        post2.setDislikes(1232);
-        posts.add(post2);
-        Post post = new Post();
-        post.setAuthor(newUser);
-        post.setTitle("Popularan");
-        post.setDate(date);
-        post.setLikes(100);
-        post.setDislikes(1);
-
-        Post post1 = new Post();
-        post1.setAuthor(newUser);
-        post1.setTitle("Mare");
-        post1.setDate(date2);
-        post1.setLikes(50);
-        post1.setDislikes(2);
-        posts.add(post1);
-        posts.add(post);
+        values.put("COLUMN_DATE", currentDate.toString());
+        // 3. insert
+        db.insert(PostContract.PostEntry.TABLE_NAME, null,values);
 
 
 
-
-        sortPosts();
+        Toast.makeText(this,currentDate.toString(),Toast.LENGTH_LONG).show();
+        helperDatabaseRead = new HelperDatabaseRead();
+        posts = helperDatabaseRead.loadPostsFromDatabase(this);
+        Toast.makeText(this,posts.get(0).getDate() + " was selected",Toast.LENGTH_SHORT).show();
         PostAdapter postListAdapter = new PostAdapter(this, posts);
         ListView listView = findViewById(R.id.post_list_view);
         listView.setAdapter(postListAdapter);
@@ -140,7 +130,19 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
                 startActivity(intent);
             }
         });
-        */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
     @Override
@@ -154,6 +156,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
     @Override
     protected  void onResume() {
         super.onResume();
+        sortPosts();
     }
     @Override
     protected  void onPause() {
@@ -168,28 +171,12 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         super.onDestroy();
     }
 
-    public void init(){
-        ListView listView = findViewById(R.id.post_list_view);
-        getLoaderManager().initLoader(0, null, (android.app.LoaderManager.LoaderCallbacks<Cursor>)this);
-        String[] from = new String[] { PostSQLiteHelper.COLUMN_TITLE, PostSQLiteHelper.COLUMN_DATE };
-        int[] to = new int[] {R.id.title_post_list, R.id.date_post_list};
-        adapter = new SimpleCursorAdapter(this, R.layout.post_layout_list_items, null, from,
-                to, 0);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-                Intent intent = new Intent(PostsActivity.this, ReadPostActivity.class);
-                Uri todoUri = Uri.parse(PostContentProvider.CONTENT_URI_POST + "/" + id);
-                intent.putExtra("id", todoUri);
-                startActivity(intent);
-            }
-        });
 
 
 
 
-    }
+
+
 
     public void sortPosts(){
         sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
@@ -199,12 +186,12 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             sortByDate();
         }
         if(sortPostbyPppularity == true){
-            sortPostsByPopularity();
+           // sortPostsByPopularity();
         }
 
 
     }
-    public void sortPostsByPopularity(){
+    /*public void sortPostsByPopularity(){
 
         Collections.sort(posts, new Comparator< Post >() {
             @Override
@@ -215,7 +202,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
 
         });
 
-    }
+    }*/
     public void sortByDate(){
         Collections.sort(posts, new Comparator<Post>() {
             @Override
@@ -266,28 +253,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         getSupportActionBar().setTitle(title);
 
     }
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] allColumns = { PostSQLiteHelper.COLUMN_ID,
-                PostSQLiteHelper.COLUMN_TITLE, PostSQLiteHelper.COLUMN_DATE, PostSQLiteHelper.COLUMN_DESCRIPTION, PostSQLiteHelper.COLUMN_LIKES, PostSQLiteHelper.COLUMN_DISLIKES,
-                 PostSQLiteHelper.COLUMN_LOCATION, PostSQLiteHelper.COLUMN_PHOTO
-        };
 
-        CursorLoader cursor = new CursorLoader(this, PostContentProvider.CONTENT_URI_POST,
-                allColumns, null, null, null);
-
-        return cursor;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        adapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.swapCursor(null);
-    }
 
 
 
