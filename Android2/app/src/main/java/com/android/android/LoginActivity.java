@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(startPosts);
             finish();
         }else{
-            Toast.makeText(this,"Sjebao si se!  " ,Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"Login failed!  " ,Toast.LENGTH_LONG).show();
 
         }
 

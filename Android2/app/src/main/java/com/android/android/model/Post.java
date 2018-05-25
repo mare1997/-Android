@@ -53,7 +53,7 @@ public class Post {
         this.likes = likes;
         this.dislikes = dislikes;
     }
-    public Post( String title, String description, Bitmap photo,
+    public Post(String description,String title, Bitmap photo,
                 User author, Date date, String location, ArrayList<Tag> tags, ArrayList<Comment> comments, int likes, int dislikes) {
 
         this.title = title;

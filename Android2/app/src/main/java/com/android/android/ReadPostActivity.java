@@ -1,5 +1,6 @@
 package com.android.android;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -11,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -111,12 +113,12 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
                     editor.apply();
                     Intent start = new Intent(ReadPostActivity.this,LoginActivity.class);
                     startActivity(start);
-                    finish();
+                    ReadPostActivity.this.finish();
                 }
 
             }
         });
-        Post p=null;
+
         Intent myIntent = getIntent();
         id= myIntent.getIntExtra("id",-1);
         helperDatabaseRead = new HelperDatabaseRead();
@@ -129,6 +131,7 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
             }
         }
         textView=(TextView)findViewById(R.id.titleRead);
+        Log.e("title:",post.getTitle());
         textView.setText(post.getTitle());
         textView=(TextView)findViewById(R.id.ReadAuthor);
         textView.setText(post.getAuthor().getName());
@@ -225,6 +228,11 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
             startActivity(new Intent(this, SettingsActivity.class));
         }
         if(item.getItemId() == R.id.delete){
+            Toast.makeText(this,"POkusaj brisasnja",Toast.LENGTH_SHORT).show();
+            Uri uri=Uri.withAppendedPath(PostContract.PostEntry.CONTENT_URI,String.valueOf(post.getId()));
+            this.getContentResolver().delete(uri,null,null);
+            Intent startPosts = new Intent(this,PostsActivity.class);
+            startActivity(startPosts);
             Toast.makeText(this,"Deleted",Toast.LENGTH_SHORT).show();
 
 
@@ -271,5 +279,6 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         }
         return null;
     }
+
 
 }

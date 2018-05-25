@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -103,7 +104,7 @@ public class ContentProvider extends android.content.ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Log.e("blabla", "blabla");
+
         mDbHelper = DatabaseHelper.getInstance(getContext());
 
         return true;
@@ -112,34 +113,24 @@ public class ContentProvider extends android.content.ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        Log.e("blabla", "blabla");
-       // SQLiteOpenHelper openHelper = DatabaseHelper.getInstance(getContext());
-       // SQLiteDatabase database = openHelper.getWritableDatabase();
         this.openHelper =  DatabaseHelper.getInstance(getContext());
-       open();
-        //Cursor
+        open();
         Cursor cursor = null;
-        // Match the correct URI
         int match = sUriMatcher.match(uri);
         switch (match) {
            case COMMENTS:
-                // This will return all comments with the given projection, selection, selection arguments and sort order.
                cursor = database.query(CommentContract.CommentEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
                 break;
 
             case USERS:
-                // This will return all users with the given projection, selection, selection arguments and sort order.
                 cursor = database.query(UserContract.UserEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
                 break;
 
             case TAGS:
-                // This will return all tags with the given projection, selection, selection arguments and sort order.
                 cursor = database.query(TagContract.TagEntry.TABLE_NAME, projection, selection,selectionArgs, null, null, sortOrder);
                 break;
 
             case POSTS:
-                   Log.e("blabla", "blabla");
-                // This will return all posts with the given projection, selection, selection arguments and sort order.
                 cursor = database.query(PostContract.PostEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
                 break;
 
@@ -161,16 +152,13 @@ public class ContentProvider extends android.content.ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         final int match = sUriMatcher.match(uri);
         switch (match){
-            // Since we're inserting a single user, there's no need to match USER_ID URI
             case USERS:
                 return insertUser(uri, values);
-            // Since we're inserting a single comment, there's no need to match COMMENT_ID URI
            case COMMENTS:
                 return insertComment(uri, values);
-            // Since we're inserting a single post, there's no need to match POST_ID URI
             case POSTS:
                 return insertPost(uri, values);
-            // Since we're inserting a single tag, there's no need to match TAG_ID URI
+
            /* case TAGS:
                 return insertTag(uri, values);*/
 
@@ -249,22 +237,52 @@ public class ContentProvider extends android.content.ContentProvider {
         }
         return ContentUris.withAppendedId(uri, id);
     }
-    //insertComment, insertTag
+    // insertTag
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        database.delete(PostContract.PostEntry.TABLE_NAME, selection, selectionArgs);
-        return 0;
+        final int match = sUriMatcher.match(uri);
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int rowsDeleted = 0;
+        switch (match){
+            case POST_ID:
+                String idPost = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsDeleted = database.delete(PostContract.PostEntry.TABLE_NAME,
+                            PostContract.PostEntry._ID + "=" + idPost,
+                            null);
+                } else {
+                    rowsDeleted = database.delete(PostContract.PostEntry._ID,
+                            PostContract.PostEntry._ID + "=" + idPost
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }break;
+            case COMMENT_ID:
+                String idComm = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsDeleted = database.delete(CommentContract.CommentEntry.TABLE_NAME,
+                            CommentContract.CommentEntry._ID + "=" + idComm,
+                            null);
+                } else {
+                    rowsDeleted = database.delete(CommentContract.CommentEntry._ID,
+                            CommentContract.CommentEntry._ID + "=" + idComm
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+
+
+        return rowsDeleted;
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         return 0;
     }
-    public void deletePost(int id){
-        database=mDbHelper.getWritableDatabase();
-        database.execSQL("DELETE FROM " + PostContract.PostEntry.TABLE_NAME + " WHERE " + PostContract.PostEntry._ID + " = " + id + ";");
 
-
-    }
 
 }

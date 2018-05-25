@@ -132,7 +132,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
                     editor.apply();
                     Intent start = new Intent(PostsActivity.this,LoginActivity.class);
                     startActivity(start);
-                    finish();
+                    PostsActivity.this.finish();
                 }
 
             }
@@ -153,7 +153,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
 
 
         posts = helperDatabaseRead.loadPostsFromDatabase(this);
-        Toast.makeText(this,posts.get(0).getDate() + " was selected",Toast.LENGTH_SHORT).show();
+
         PostAdapter postListAdapter = new PostAdapter(this, posts);
         ListView listView = findViewById(R.id.post_list_view);
         listView.setAdapter(postListAdapter);

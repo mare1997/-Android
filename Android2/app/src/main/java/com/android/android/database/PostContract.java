@@ -12,6 +12,7 @@ public class PostContract {
     // Table name
     public static final String PATH_POST = "post";
 
+
     private PostContract(){
 
     }
@@ -19,6 +20,8 @@ public class PostContract {
     public static class PostEntry implements BaseColumns {
         // Complete URI for the Post table
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_POST);
+
+
         //Name of the database table
         public static final String TABLE_NAME= "Post";
 

@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -98,7 +99,7 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
                     editor.apply();
                     Intent start = new Intent(CreatePostActivity.this,LoginActivity.class);
                     startActivity(start);
-                    finish();
+                    CreatePostActivity.this.finish();
                 }
 
             }
@@ -205,7 +206,9 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
                 u=uu;
             }
         }
-        Post p =new Post(title,desc,null,u,getDateTime(),"gaga",null,null,0,0);
+        Post p =new Post(desc, title,null,u,getDateTime(),"gaga",null,null,0,0);
+        Log.e("title:",p.getTitle());
+        Toast.makeText(this, "title:" + p.getTitle(), Toast.LENGTH_SHORT).show();
         helperDatabaseRead.insertPost(p,this);
     }
     private Date getDateTime(){
