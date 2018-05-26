@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.android.android.model.Comment;
 import com.android.android.model.Post;
@@ -389,6 +391,7 @@ public class HelperDatabaseRead {
         mNewUri= activity.getContentResolver().insert(PostContract.PostEntry.CONTENT_URI,values);
 
     }
+
     public void insertComment(Comment comment,Activity activity){
         Uri mNewUri;
         String date = new SimpleDateFormat("dd.MM.yyyy").format(comment.getDate());
@@ -413,7 +416,35 @@ public class HelperDatabaseRead {
         mNewUri= activity.getContentResolver().insert(TagContract.TagEntry.CONTENT_URI,values);
 
     }
+    public void updatePost(Post post,Activity activity,String selection,String[] selectionArgs){
+        int mNewUri;
+        String date = new SimpleDateFormat("dd.MM.yyyy").format(post.getDate());
+        ContentValues values = new ContentValues();
+        values.put(PostContract.PostEntry.COLUMN_TITLE, post.getTitle());
+        values.put(PostContract.PostEntry.COLUMN_DESCRIPTION, post.getDescription());
+        values.put(PostContract.PostEntry.COLUMN_DATE, date);
+        values.put(PostContract.PostEntry.COLUMN_AUTHOR_ID, post.getAuthor().getId());
+        values.put(PostContract.PostEntry.COLUMN_LIKES, post.getLikes());
+        values.put(PostContract.PostEntry.COLUMN_DISLIKES, post.getDislikes());
+        values.put(PostContract.PostEntry.COLUMN_LOCATION, post.getLocation().toString());
+        Uri uri=Uri.withAppendedPath(PostContract.PostEntry.CONTENT_URI,String.valueOf(post.getId()));
+        mNewUri= activity.getContentResolver().update(uri,values,selection,selectionArgs);
 
+    }
+    public void updateComment(Comment comment,Activity activity,String selection,String[] selectionArgs){
+        int mNewUri;
+        String date = new SimpleDateFormat("dd.MM.yyyy").format(comment.getDate());
+        ContentValues values = new ContentValues();
+        values.put(CommentContract.CommentEntry.COLUMN_TITLE, comment.getTitle());
+        values.put(CommentContract.CommentEntry.COLUMN_DESCRIPTION, comment.getDescription());
+        values.put(CommentContract.CommentEntry.COLUMN_DATE, date);
+        values.put(CommentContract.CommentEntry.COLUMN_AUTHOR_ID, comment.getAuthor().getId());
+        values.put(CommentContract.CommentEntry.COLUMN_LIKES, comment.getLikes());
+        values.put(CommentContract.CommentEntry.COLUMN_DISLIKES, comment.getDislikes());
+        values.put(CommentContract.CommentEntry.COLUMN_POST_ID, comment.getPost());
+        Uri uri=Uri.withAppendedPath(CommentContract.CommentEntry.CONTENT_URI,String.valueOf(comment.getId()));
+        mNewUri= activity.getContentResolver().update(uri,values,selection,selectionArgs);
+    }
 
 }
 

@@ -155,4 +155,10 @@ public class Post {
     public void setDislikes(int dislikes) {
         this.dislikes = dislikes;
     }
+
+    public int getPopularity() {
+        return likes-dislikes;
+    }
+
+
 }

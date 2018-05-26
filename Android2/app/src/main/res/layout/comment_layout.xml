@@ -34,6 +34,7 @@
                 android:text="Date"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="5dp"
+                android:id="@+id/date_comm_"
                />
         </RelativeLayout>
 
@@ -52,7 +53,7 @@
         android:layout_height="wrap_content">
 
         <ImageButton
-            android:id="@+id/imageButton1"
+            android:id="@+id/likeBtnComm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/like"
@@ -63,12 +64,12 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="11dp"
-            android:layout_toEndOf="@+id/imageButton1"
+            android:layout_toEndOf="@+id/likeBtnComm"
             android:text="5"
             android:id="@+id/likeComm" />
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/dislikeBtnComm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -82,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="11dp"
-            android:layout_toEndOf="@+id/imageButton2"
+            android:layout_toEndOf="@+id/dislikeBtnComm"
             android:text="2"
             android:id="@+id/dislkeComm" />
 

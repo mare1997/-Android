@@ -62,7 +62,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posts);
 
-        Toast.makeText(this,"CreatePostActivity",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"PostActivity",Toast.LENGTH_SHORT).show();
         Toolbar toolbar=(Toolbar) findViewById(R.id.toolbarPost);
         setSupportActionBar(toolbar);
         final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -137,21 +137,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
 
             }
         });
-
-
         helperDatabaseRead = new HelperDatabaseRead();
-        User u=null;
-        for(User usser :helperDatabaseRead.loadUsersFromDatabase(this)){
-            if(usser.getId() == 1){
-                u=usser;
-            }
-        }
-        /*String date="15.05.2016";
-        Date d=helperDatabaseRead.convertStringToDate(date);
-        Post p=new Post("caocao","caocao",null,u,d,"aaa",null,null,15,1 );
-        helperDatabaseRead.insertPost(p,this);*/
-
-
         posts = helperDatabaseRead.loadPostsFromDatabase(this);
 
         PostAdapter postListAdapter = new PostAdapter(this, posts);
@@ -160,26 +146,12 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Post clickedObj = (Post) adapterView.getItemAtPosition(i);
                 Intent intent = new Intent(PostsActivity.this,ReadPostActivity.class);
-                intent.putExtra("id",i+1);
+                intent.putExtra("id",clickedObj.getId());
                 startActivity(intent);
             }
-        });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
+        }); }
     @Override
     protected  void onStart() {
         super.onStart();
@@ -206,13 +178,6 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         super.onDestroy();
     }
 
-
-
-
-
-
-
-
     public void sortPosts(){
         sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         sortPostbyDate =sharedPreferences.getBoolean(getString(R.string.sort_posts_date_key),false);
@@ -221,12 +186,12 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             sortByDate();
         }
         if(sortPostbyPppularity == true){
-           // sortPostsByPopularity();
+            sortPostsByPopularity();
         }
 
 
     }
-    /*public void sortPostsByPopularity(){
+    public void sortPostsByPopularity(){
 
         Collections.sort(posts, new Comparator< Post >() {
             @Override
@@ -237,7 +202,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
 
         });
 
-    }*/
+    }
     public void sortByDate(){
         Collections.sort(posts, new Comparator<Post>() {
             @Override

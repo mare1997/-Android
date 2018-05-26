@@ -7,6 +7,8 @@ import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,10 +26,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.android.adapters.CommentAdapter;
+import com.android.android.adapters.SectionsPagerAdapter;
 import com.android.android.database.ContentProvider;
 import com.android.android.database.DatabaseHelper;
 import com.android.android.database.HelperDatabaseRead;
 import com.android.android.database.PostContract;
+import com.android.android.fragments.CommentFragment;
+import com.android.android.fragments.PostFragment;
 import com.android.android.model.Comment;
 import com.android.android.model.Post;
 import com.android.android.model.Tag;
@@ -51,6 +56,8 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
     private TextView textView;
     private int idUser;
     private int id;
+    private SectionsPagerAdapter mSPA;
+    private ViewPager mViewPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,49 +126,15 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
             }
         });
 
-        Intent myIntent = getIntent();
-        id= myIntent.getIntExtra("id",-1);
-        helperDatabaseRead = new HelperDatabaseRead();
-        posts=helperDatabaseRead.loadPostsFromDatabase(this);
-        if(id != -1){
-            for(Post pp: posts){
-                if(pp.getId() == id){
-                    post = pp;
-                }
-            }
-        }
-        textView=(TextView)findViewById(R.id.titleRead);
-        Log.e("title:",post.getTitle());
-        textView.setText(post.getTitle());
-        textView=(TextView)findViewById(R.id.ReadAuthor);
-        textView.setText(post.getAuthor().getName());
-        textView=(TextView)findViewById(R.id.desc);
-        textView.setText(post.getDescription());
-        textView=(TextView)findViewById(R.id.tag);
-        List<Tag> tags=post.getTags();
-        String tag="";
-        int size= -1;
-        if(post.getTags() == null){
-            size=0;
-        }else{
-            size=post.getTags().size();
-        }
-        for(int i =0 ;i< size;i++){
-            tag=tag+ ", "+tags.get(i).getName();
-            textView.setText(tag);
-        }
-        textView=(TextView)findViewById(R.id.likes);
-        String like= String.valueOf(post.getLikes());
-        textView.setText(like);
-        textView=(TextView)findViewById(R.id.dislikes);
-        String disslike= String.valueOf(post.getDislikes());
-        textView.setText(disslike);
-        textView=(TextView)findViewById(R.id.date);
-        String date = new SimpleDateFormat("dd.MM.yyyy").format(post.getDate());
-        textView.setText(date);
-        CommentAdapter commentAdapter=new CommentAdapter(this,post.getComments());
-        ListView listView = findViewById(R.id.readpost_list_view_comment);
-        listView.setAdapter(commentAdapter);
+        mSPA = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        setupViewPager(mViewPager);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+
 
 
 
@@ -196,6 +169,14 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         super.onDestroy();
     }
 
+    private void setupViewPager(ViewPager viewPager) {
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new PostFragment(), "Post");
+        adapter.addFragment(new CommentFragment(), "Comment");
+
+        viewPager.setAdapter(adapter);
+    }
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Toast.makeText(this,lista[position] + " was selected",Toast.LENGTH_SHORT).show();
@@ -228,7 +209,17 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
             startActivity(new Intent(this, SettingsActivity.class));
         }
         if(item.getItemId() == R.id.delete){
-            Toast.makeText(this,"POkusaj brisasnja",Toast.LENGTH_SHORT).show();
+            Intent myIntent = getIntent();
+            id= myIntent.getIntExtra("id",-1);
+            helperDatabaseRead = new HelperDatabaseRead();
+            posts=helperDatabaseRead.loadPostsFromDatabase(this);
+            if(id != -1){
+                for(Post pp: posts){
+                    if(pp.getId() == id){
+                        post = pp;
+                    }
+                }
+            }
             Uri uri=Uri.withAppendedPath(PostContract.PostEntry.CONTENT_URI,String.valueOf(post.getId()));
             this.getContentResolver().delete(uri,null,null);
             Intent startPosts = new Intent(this,PostsActivity.class);
@@ -241,44 +232,7 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         return super.onOptionsItemSelected(item);
     }
 
-    public void btnAddComment(View view) {
-        helperDatabaseRead = new HelperDatabaseRead();
-        textView=(TextView)findViewById(R.id.titleComm);
-        String title=textView.getText().toString();
-        textView=(TextView)findViewById(R.id.descComm);
-        String desc=textView.getText().toString();
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
-        idUser = pref.getInt("id",-1);
-        User u=null;
-        for(User uu:helperDatabaseRead.loadUsersFromDatabase(this)){
-            if(uu.getId() == idUser){
-                u=uu;
-            }
-        }
-        Comment c= new Comment(title,desc,u,getDateTime(),id,0,0);
-        helperDatabaseRead.insertComment(c,this);
-        Intent intent = new Intent(ReadPostActivity.this,ReadPostActivity.class);
 
-        startActivity(intent);
-    }
-    private Date getDateTime(){
-        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        Date date = new Date();
-        String sDate= dateFormat.format(date);
-        Toast.makeText(this,sDate,Toast.LENGTH_SHORT).show();
-        return  convertStringToDate(sDate);
-    }
-    public Date convertStringToDate(String dtStart){
-
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-        try {
-            Date date = format.parse(dtStart);
-            return date;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 
 }

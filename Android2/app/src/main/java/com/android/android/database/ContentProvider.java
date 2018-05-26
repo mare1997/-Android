@@ -1,5 +1,6 @@
 package com.android.android.database;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -223,9 +224,7 @@ public class ContentProvider extends android.content.ContentProvider {
         String likes = values.getAsString(PostContract.PostEntry.COLUMN_LIKES);
         String dislikes = values.getAsString(PostContract.PostEntry.COLUMN_DISLIKES);
 
-        /*if (title == null || description == null) {
-            throw new IllegalArgumentException("Posts arguments cannot be empty");
-        }*/
+
         //Gain write access to the database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         //Insert a new post
@@ -281,7 +280,49 @@ public class ContentProvider extends android.content.ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        final int match = sUriMatcher.match(uri);
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int rowsUpdated = 0;
+        switch (match){
+            case POST_ID:
+                String idPOst = uri.getLastPathSegment();
+
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = database.update(PostContract.PostEntry.TABLE_NAME,
+                            values,
+                            PostContract.PostEntry._ID + "=" + idPOst,
+                            null);
+                } else {
+                    rowsUpdated = database.update(PostContract.PostEntry.TABLE_NAME,
+                            values,
+                            PostContract.PostEntry._ID + "=" + idPOst
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+                break;
+            case COMMENT_ID:
+                String idComm = uri.getLastPathSegment();
+
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = database.update(CommentContract.CommentEntry.TABLE_NAME,
+                            values,
+                            CommentContract.CommentEntry._ID + "=" + idComm,
+                            null);
+                } else {
+                    rowsUpdated = database.update(CommentContract.CommentEntry.TABLE_NAME,
+                            values,
+                            CommentContract.CommentEntry._ID + "=" + idComm
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
     }
 
 
