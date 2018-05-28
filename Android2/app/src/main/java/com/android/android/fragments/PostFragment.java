@@ -93,7 +93,8 @@ public class PostFragment extends Fragment {
         textView=(TextView)view.findViewById(R.id.titleRead);
 
         textView.setText(post.getTitle());
-
+        textView=(TextView)view.findViewById(R.id.location);
+        textView.setText(post.getLocation());
         textView=(TextView)view.findViewById(R.id.desc);
         textView.setText(post.getDescription());
         textView=(TextView)view.findViewById(R.id.tag);
@@ -121,8 +122,26 @@ public class PostFragment extends Fragment {
         Button button = (Button) view.findViewById(R.id.btnAddComm);
         button.setOnClickListener(new View.OnClickListener() {
 
-            public void onClick(View v) {
-                btnAddComment(v);
+            public void onClick(View view) {
+
+                helperDatabaseRead = new HelperDatabaseRead();
+                textView=(TextView)view.findViewById(R.id.titleComm);
+                String title=textView.getText().toString();
+                textView=(TextView)view.findViewById(R.id.descComm);
+                String desc=textView.getText().toString();
+                SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("mPref",0);
+                idUser = pref.getInt("id",-1);
+                User u=null;
+                for(User uu:helperDatabaseRead.loadUsersFromDatabase(getActivity())){
+                    if(uu.getId() == idUser){
+                        u=uu;
+                    }
+                }
+                Comment c= new Comment(title,desc,u,getDateTime(),id,0,0);
+                helperDatabaseRead.insertComment(c,getActivity());
+                Intent intent = new Intent(getActivity(),ReadPostActivity.class);
+                startActivity(intent);
+
 
             }
         });

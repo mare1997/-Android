@@ -97,7 +97,7 @@ public class HelperDatabaseRead {
                     }
                 }*/
 
-                    posts.add(new Post(currentId,title,description,null,author,cDate,null,null,commentsFiltered,likes,dislikes));
+                    posts.add(new Post(currentId,title,description,null,author,cDate,location,null,commentsFiltered,likes,dislikes));
                 }
 
 
