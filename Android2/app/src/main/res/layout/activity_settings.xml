@@ -4,7 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/backgraund"
     tools:context="com.android.android.SettingsActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbarSettings"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary">
+        </android.support.v7.widget.Toolbar>
+    </LinearLayout>
+    <android.support.design.widget.NavigationView
+        app:headerLayout="@layout/navigation_drawer"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
 
+        >
+        <ListView
+            android:layout_marginTop="120dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contextClickable="true"
+            android:entries="@array/nav_drawer"
+            android:choiceMode="singleChoice"
+            android:id="@+id/create_post_list"
+            android:background="@color/colorDarkCrem"
+            android:divider="@color/darkGray"
 
+            />
+
+    </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

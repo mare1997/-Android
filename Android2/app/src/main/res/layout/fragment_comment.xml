@@ -9,8 +9,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         >
+        <EditText
+            android:id="@+id/titleComm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Title" />
+        <EditText
+            android:id="@+id/descComm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Comment" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add comment"
+            android:id="@+id/btnAddComm"
+
+            />
         <ListView
             android:id="@+id/readpost_list_view_comment"
             android:layout_width="match_parent"

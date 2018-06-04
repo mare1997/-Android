@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class HelperDatabaseRead {
+public class CRUD {
     private ArrayList<Post> postsss = new ArrayList<>();
 
     public ArrayList<Post> loadPostsFromDatabase(Activity activity){
@@ -115,7 +115,7 @@ public class HelperDatabaseRead {
         }
         return null;
     }
-  //  private ArrayList<Comment> comments = new ArrayList<>();
+
 
     public ArrayList<Comment> loadCommentsFromDatabase(Activity activity){
         //Definisi projekciju pomocu koje ces da ucitas podatke iz tabele comment

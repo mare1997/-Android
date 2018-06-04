@@ -8,15 +8,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.android.database.HelperDatabaseRead;
-import com.android.android.model.Post;
+import com.android.android.database.CRUD;
 import com.android.android.model.User;
 
 import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
     private TextView textView;
-    private HelperDatabaseRead helperDatabaseRead;
+    private CRUD CRUD;
     private ArrayList<User> users = new ArrayList<User>();
 
     @Override
@@ -69,8 +68,8 @@ public class LoginActivity extends AppCompatActivity {
     }
     public boolean login(String user,String pass){
 
-        helperDatabaseRead = new HelperDatabaseRead();
-        users = helperDatabaseRead.loadUsersFromDatabase(this);
+        CRUD = new CRUD();
+        users = CRUD.loadUsersFromDatabase(this);
         for(User u:users){
             if (u.getUsername().equals(user))
                 if (u.getPassword().equals(pass)) {

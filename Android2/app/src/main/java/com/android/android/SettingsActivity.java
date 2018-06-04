@@ -17,6 +17,9 @@ import android.widget.DatePicker;
 import java.util.Calendar;
 
 public class SettingsActivity extends PreferenceActivity implements DatePickerDialog.OnDateSetListener {
+
+
+
     @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,12 +1,8 @@
 package com.android.android;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -14,34 +10,26 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.android.android.adapters.PostAdapter;
-import com.android.android.database.ContentProvider;
 import com.android.android.database.DatabaseHelper;
-import com.android.android.database.HelperDatabaseRead;
-import com.android.android.database.PostContract;
-import com.android.android.database.UserContract;
+import com.android.android.database.CRUD;
 import com.android.android.model.Post;
 import com.android.android.model.User;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 
 
 public class PostsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -52,7 +40,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
     private boolean sortPostbyPppularity;
     private SharedPreferences sharedPreferences;
     private ActionBarDrawerToggle toggle;
-    private HelperDatabaseRead helperDatabaseRead;
+    private CRUD CRUD;
     private ArrayList<Post> posts = new ArrayList<Post>();
     private DatabaseHelper mDbHelper;
     private TextView textView;
@@ -78,11 +66,11 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onDrawerOpened(View drawerView) {
                 Toast.makeText(PostsActivity.this,"Drawer Opened",Toast.LENGTH_SHORT).show();
-                helperDatabaseRead = new HelperDatabaseRead();
+                CRUD = new CRUD();
                 SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
                 int idUser = pref.getInt("id",-1);
                 User u=null;
-                for(User user: helperDatabaseRead.loadUsersFromDatabase(PostsActivity.this)){
+                for(User user: CRUD.loadUsersFromDatabase(PostsActivity.this)){
                     if(user.getId() == idUser){
                         u=user;
                     }
@@ -123,9 +111,12 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
                     startActivity(new Intent(view.getContext(), PostsActivity.class));
                 }
                 if(position == 1){
-                    startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                    startActivity(new Intent(view.getContext(), CreatePostActivity.class));
                 }
                 if(position == 2){
+                    startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                }
+                if(position == 3){
                     SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
                     SharedPreferences.Editor editor=pref.edit();
                     editor.clear();
@@ -137,8 +128,8 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
 
             }
         });
-        helperDatabaseRead = new HelperDatabaseRead();
-        posts = helperDatabaseRead.loadPostsFromDatabase(this);
+        CRUD = new CRUD();
+        posts = CRUD.loadPostsFromDatabase(this);
 
         PostAdapter postListAdapter = new PostAdapter(this, posts);
         ListView listView = findViewById(R.id.post_list_view);
@@ -181,7 +172,7 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
     public void sortPosts(){
         sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         sortPostbyDate =sharedPreferences.getBoolean(getString(R.string.sort_posts_date_key),false);
-        sortPostbyPppularity=sharedPreferences.getBoolean(getString(R.string.sort_posts_popu),false);
+        sortPostbyPppularity=sharedPreferences.getBoolean(getString(R.string.sort_posts_popu_key),false);
         if(sortPostbyDate == true){
             sortByDate();
         }
@@ -193,13 +184,15 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
     }
     public void sortPostsByPopularity(){
 
-        Collections.sort(posts, new Comparator< Post >() {
+        Collections.sort(posts, new Comparator<Post>() {
             @Override
             public int compare(Post post, Post t1) {
-                return   post.getPopularity() - t1.getPopularity();
+                int first;
+                int second ;
+                first = post.getLikes() - post.getDislikes();
+                second = t1.getLikes() - t1.getDislikes();
+                return Integer.valueOf(second).compareTo(first);
             }
-
-
         });
 
     }
@@ -207,10 +200,12 @@ public class PostsActivity extends AppCompatActivity implements AdapterView.OnIt
         Collections.sort(posts, new Comparator<Post>() {
             @Override
             public int compare(Post post, Post t1) {
-                return post.getDate().compareTo(t1.getDate()) ;
+                return t1.getDate().compareTo(post.getDate()) ;
             }
         });
     }
+
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Toast.makeText(this,lista[position] + " was selected",Toast.LENGTH_SHORT).show();

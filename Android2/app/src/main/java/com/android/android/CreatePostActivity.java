@@ -1,18 +1,18 @@
 package com.android.android;
 
 import android.Manifest;
-import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -31,32 +31,38 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.android.database.HelperDatabaseRead;
+import com.android.android.database.CRUD;
 import com.android.android.dialogs.LocationDialog;
-import com.android.android.fragments.LocationFragment;
 import com.android.android.model.Post;
+import com.android.android.model.Tag;
 import com.android.android.model.User;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 
-public class CreatePostActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class CreatePostActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,LocationListener {
     private DrawerLayout drawerLayout;
     private ListView listView;
     private String[] lista;
     private ActionBarDrawerToggle toggle;
     int idUser = -1;
     private TextView textView;
-    private HelperDatabaseRead helperDatabaseRead;
+    private CRUD CRUD;
+    private double longitude;
+    private double latitude;
+
     private LocationManager locationManager;
-    private LocationListener locationListener;
-    private double lon;
-    private double lat;
+    private AlertDialog dialog;
+    private String provider;
+    private Location location;
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +77,11 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
                 R.string.open, R.string.close) {
             @Override
             public void onDrawerOpened(View drawerView) {
-                helperDatabaseRead = new HelperDatabaseRead();
+                CRUD = new CRUD();
                 SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref", 0);
                 int idUser = pref.getInt("id", -1);
                 User u = null;
-                for (User user : helperDatabaseRead.loadUsersFromDatabase(CreatePostActivity.this)) {
+                for (User user : CRUD.loadUsersFromDatabase(CreatePostActivity.this)) {
                     if (user.getId() == idUser) {
                         u = user;
                     }
@@ -111,9 +117,12 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
                     startActivity(new Intent(view.getContext(), PostsActivity.class));
                 }
                 if (position == 1) {
-                    startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                    startActivity(new Intent(view.getContext(), CreatePostActivity.class));
                 }
                 if (position == 2) {
+                    startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                }
+                if (position == 3) {
                     SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref", 0);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.clear();
@@ -128,61 +137,15 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
         SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref", 0);
         idUser = pref.getInt("id", -1);
 
-        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
 
-                Log.d("Location:",location.toString());
-            }
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},1);
-            return;
-        }else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            lat=location.getLatitude();
-            lon=location.getLongitude();
-        }
 
 
 
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if(grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-        }
-    }
 
     @Override
     protected  void onStart() {
@@ -195,12 +158,21 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
     @Override
     protected  void onResume() {
         super.onResume();
+        getProvider();
 
+        if (location == null) {
+            Toast.makeText(getApplicationContext(), "Location not found", Toast.LENGTH_SHORT).show();
+        }
+        if (location != null) {
+            getAddress(location.getLatitude(), location.getLongitude());
+            onLocationChanged(location);
+            locationManager.removeUpdates(CreatePostActivity.this);
+        }
     }
     @Override
     protected  void onPause() {
         super.onPause();
-        locationManager.removeUpdates(locationListener);
+
     }
     @Override
     protected  void onStop() {
@@ -265,45 +237,30 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
 
     }
     public void createPost(){
-        helperDatabaseRead = new HelperDatabaseRead();
+        CRUD = new CRUD();
         textView=(TextView)findViewById(R.id.createTitle);
         String title=textView.getText().toString();
         textView=(TextView)findViewById(R.id.createDesc);
         String desc=textView.getText().toString();
         textView=(TextView)findViewById(R.id.createTags);
         String tag=textView.getText().toString();
+        String[] tagss= tag.split(",");
+        ArrayList<Tag> ttt=null;
         User u=null;
-        for(User uu:helperDatabaseRead.loadUsersFromDatabase(this)){
+        for(User uu: CRUD.loadUsersFromDatabase(this)){
             if(uu.getId() == idUser){
                 u=uu;
             }
         }
-        Post p =new Post(desc, title,null,u,getDateTime(),hereLocation(lat,lon),null,null,0,0);
-        Log.e("title:",p.getTitle());
-
-        helperDatabaseRead.insertPost(p,this);
-    }
-    public String hereLocation(double lat,double lon){
-        String ourSity="";
-        Geocoder geocoder=new Geocoder(CreatePostActivity.this, Locale.getDefault());
-        List<Address> addressList = null;
-        try {
-            addressList=geocoder.getFromLocation(lat,lon,1);
-
-        }catch (Exception e){
-            e.printStackTrace();
+        Post p =new Post(desc, title,null,u,getDateTime(),getAddress(latitude,longitude),null,null,0,0);
+        CRUD.insertPost(p,this);
+        Post ppp= null;
+        int ii= CRUD.loadPostsFromDatabase(this).size();
+        ppp= CRUD.loadPostsFromDatabase(this).get(ii-1);
+        for(int i=0;i<tagss.length;i++){
+            Tag newTag=new Tag(tagss[i],ppp.getId());
+            CRUD.insertTag(newTag,this);
         }
-        if(addressList==null || addressList.size()==0){
-            String s1=String.valueOf(lat);
-            String s2=String.valueOf(lon);
-            ourSity=s1 + "," + s2;
-        }else{
-
-            ourSity=addressList.get(0).getAddressLine(0);
-
-        }
-        return ourSity;
-
 
     }
     private Date getDateTime(){
@@ -323,5 +280,122 @@ public class CreatePostActivity extends AppCompatActivity implements AdapterView
             e.printStackTrace();
         }
         return null;
+    }
+    public void getProvider(){
+        Criteria criteria = new Criteria();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(locationManager!=null)
+            provider = locationManager.getBestProvider(criteria, true);
+
+        boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean wifi = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        Log.e("gps",gps+"");
+        Log.e("wifi",wifi+"");
+        if(!gps &&  !wifi){
+            showLocatonDialog();
+        }else{
+            if(checkLocationPermission()){
+                if(ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+
+                    locationManager.requestLocationUpdates(provider,0,0,this);
+                }else if(ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED){
+
+                    locationManager.requestLocationUpdates(provider,0,0,this);
+                }
+            }
+        }
+
+        location = null;
+
+        if(checkLocationPermission()){
+            if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                location = locationManager.getLastKnownLocation(provider);
+
+            }else if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                location = locationManager.getLastKnownLocation(provider);
+
+            }
+        }
+
+    }
+
+    private void showLocatonDialog() {
+        if (dialog == null) {
+            dialog = new LocationDialog(this).prepareDialog();
+        } else {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
+
+        dialog.show();
+    }
+
+
+    public boolean checkLocationPermission(){
+       if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)){
+                new AlertDialog.Builder(this)
+                        .setTitle("Allow user location")
+                        .setMessage("To continue working we need your locations... Allow now?")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(CreatePostActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+            }else{
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public String getAddress(double latitude,double longitude){
+        String s="";
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            String city = addresses.get(0).getLocality();
+            String country = addresses.get(0).getCountryName();
+            s=city + ", " + country;
+            return s;
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return latitude + ", " + longitude;
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

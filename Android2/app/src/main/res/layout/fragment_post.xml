@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/backgraund"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.PostFragment">
 
@@ -51,10 +52,10 @@
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            app:srcCompat="@mipmap/ic_launcher" />
+            app:srcCompat="@drawable/user" />
 
         <TextView
             android:id="@+id/ReadAuthor"
@@ -69,9 +70,9 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:layout_marginTop="25dp"
-        app:srcCompat="@mipmap/ic_launcher"
+        app:srcCompat="@drawable/image1"
         />
     <TextView
         android:id="@+id/desc"
@@ -135,22 +136,6 @@
     </RelativeLayout>
 
 
-    <EditText
-        android:id="@+id/titleComm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="Title" />
-    <EditText
-        android:id="@+id/descComm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Comment" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add comment"
-        android:id="@+id/btnAddComm"
-        />
+
     </LinearLayout>
 </FrameLayout>

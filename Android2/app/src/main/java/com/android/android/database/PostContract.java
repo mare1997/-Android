@@ -34,8 +34,7 @@ public class PostContract {
         public static final String COLUMN_LOCATION = "location";
         public static final String COLUMN_LIKES = "likes";
         public static final String COLUMN_DISLIKES = "dislikes";
-     //   public static final String COLUMN_TAGS = "tags";
-     //   public static final String COLUMN_COMMENTS = "comments";
+
     }
 
 }

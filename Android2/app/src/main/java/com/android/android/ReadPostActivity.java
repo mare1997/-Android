@@ -1,11 +1,8 @@
 package com.android.android;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -14,43 +11,31 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.android.adapters.CommentAdapter;
 import com.android.android.adapters.SectionsPagerAdapter;
-import com.android.android.database.ContentProvider;
-import com.android.android.database.DatabaseHelper;
-import com.android.android.database.HelperDatabaseRead;
+import com.android.android.database.CRUD;
 import com.android.android.database.PostContract;
 import com.android.android.fragments.CommentFragment;
 import com.android.android.fragments.PostFragment;
-import com.android.android.model.Comment;
 import com.android.android.model.Post;
-import com.android.android.model.Tag;
 import com.android.android.model.User;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class ReadPostActivity extends AppCompatActivity implements AdapterView.OnItemClickListener  {
     private DrawerLayout drawerLayout;
     private ListView listView;
     private String[] lista;
     private ActionBarDrawerToggle toggle;
-    private HelperDatabaseRead helperDatabaseRead;
+    private CRUD CRUD;
     private ArrayList<Post> posts = new ArrayList<Post>();
     private Post post=null;
     private TextView textView;
@@ -70,11 +55,11 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
                 R.string.open,R.string.close){
             @Override
             public void onDrawerOpened(View drawerView) {
-                helperDatabaseRead = new HelperDatabaseRead();
+                CRUD = new CRUD();
                 SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
-                int idUser = pref.getInt("id",-1);
+                int idUser = pref.getInt("idUser",-1);
                 User u=null;
-                for(User user: helperDatabaseRead.loadUsersFromDatabase(ReadPostActivity.this)){
+                for(User user: CRUD.loadUsersFromDatabase(ReadPostActivity.this)){
                     if(user.getId() == idUser){
                         u=user;
                     }
@@ -111,9 +96,12 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
                     startActivity(new Intent(view.getContext(), PostsActivity.class));
                 }
                 if(position == 1){
-                    startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                    startActivity(new Intent(view.getContext(), CreatePostActivity.class));
                 }
                 if(position == 2){
+                    startActivity(new Intent(view.getContext(), SettingsActivity.class));
+                }
+                if(position == 3){
                     SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
                     SharedPreferences.Editor editor=pref.edit();
                     editor.clear();
@@ -211,23 +199,31 @@ public class ReadPostActivity extends AppCompatActivity implements AdapterView.O
         if(item.getItemId() == R.id.delete){
             Intent myIntent = getIntent();
             id= myIntent.getIntExtra("id",-1);
-            helperDatabaseRead = new HelperDatabaseRead();
-            posts=helperDatabaseRead.loadPostsFromDatabase(this);
-            if(id != -1){
-                for(Post pp: posts){
-                    if(pp.getId() == id){
+            SharedPreferences pref = getApplicationContext().getSharedPreferences("mPref",0);
+            int idUser = pref.getInt("id",-1);
+            CRUD = new CRUD();
+            posts = CRUD.loadPostsFromDatabase(this);
+            if (id != -1) {
+                for (Post pp : posts) {
+                    if (pp.getId() == id) {
                         post = pp;
                     }
                 }
             }
-            Uri uri=Uri.withAppendedPath(PostContract.PostEntry.CONTENT_URI,String.valueOf(post.getId()));
-            this.getContentResolver().delete(uri,null,null);
-            Intent startPosts = new Intent(this,PostsActivity.class);
-            startActivity(startPosts);
-            Toast.makeText(this,"Deleted",Toast.LENGTH_SHORT).show();
+            if(post.getAuthor().getId() == idUser) {
+
+                Uri uri = Uri.withAppendedPath(PostContract.PostEntry.CONTENT_URI, String.valueOf(post.getId()));
+                this.getContentResolver().delete(uri, null, null);
+                Intent startPosts = new Intent(this, PostsActivity.class);
+                startActivity(startPosts);
+                Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
 
 
-            startActivity(new Intent(this, PostsActivity.class));
+                startActivity(new Intent(this, PostsActivity.class));
+            }else{
+                Toast.makeText(this, "You can delete just your posts!!!", Toast.LENGTH_SHORT).show();
+
+            }
         }
         return super.onOptionsItemSelected(item);
     }

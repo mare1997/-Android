@@ -128,7 +128,7 @@ public class ContentProvider extends android.content.ContentProvider {
                 break;
 
             case TAGS:
-                cursor = database.query(TagContract.TagEntry.TABLE_NAME, projection, selection,selectionArgs, null, null, sortOrder);
+                cursor = database.query(TagContract.TagEntry.TABLE_NAME, projection, selection,selectionArgs, null, null, null);
                 break;
 
             case POSTS:
@@ -160,8 +160,8 @@ public class ContentProvider extends android.content.ContentProvider {
             case POSTS:
                 return insertPost(uri, values);
 
-           /* case TAGS:
-                return insertTag(uri, values);*/
+           case TAGS:
+                return insertTag(uri, values);
 
             default:
                 throw new IllegalArgumentException("Insertion is not supported for: " + uri);
@@ -190,16 +190,6 @@ public class ContentProvider extends android.content.ContentProvider {
         return ContentUris.withAppendedId(uri, id);
     }
     private Uri insertComment(Uri uri, ContentValues values) {
-        //DATA VALIDATION
-        String title = values.getAsString(CommentContract.CommentEntry.COLUMN_TITLE);
-        String description = values.getAsString(CommentContract.CommentEntry.COLUMN_DESCRIPTION);
-        String postId = values.getAsString(CommentContract.CommentEntry.COLUMN_POST_ID);
-        String authorId = values.getAsString(CommentContract.CommentEntry.COLUMN_AUTHOR_ID);
-        String data = values.getAsString(CommentContract.CommentEntry.COLUMN_DATE);
-
-        String likes = values.getAsString(CommentContract.CommentEntry.COLUMN_LIKES);
-        String dislikes = values.getAsString(CommentContract.CommentEntry.COLUMN_DISLIKES);
-
 
         //Gain write access to the database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -212,7 +202,19 @@ public class ContentProvider extends android.content.ContentProvider {
         }
         return ContentUris.withAppendedId(uri, id);
     }
+    private Uri insertTag(Uri uri, ContentValues values) {
 
+        //Gain write access to the database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        //Insert a new post
+        Long id = database.insert(TagContract.TagEntry.TABLE_NAME, null, values);
+        //check if insertion is successful, -1 = failed
+        if (id == -1) {
+            Toast.makeText(getContext(), "Failed to add new tag", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return ContentUris.withAppendedId(uri, id);
+    }
     private Uri insertPost(Uri uri, ContentValues values) {
         //DATA VALIDATION
         String title = values.getAsString(PostContract.PostEntry.COLUMN_TITLE);

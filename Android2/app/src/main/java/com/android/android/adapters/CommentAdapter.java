@@ -2,16 +2,19 @@ package com.android.android.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.android.R;
-import com.android.android.ReadPostActivity;
-import com.android.android.database.HelperDatabaseRead;
+import com.android.android.database.CommentContract;
+import com.android.android.database.CRUD;
 import com.android.android.model.Comment;
 
 import java.text.DateFormat;
@@ -21,12 +24,16 @@ import java.util.ArrayList;
 public class CommentAdapter extends ArrayAdapter<Comment> {
     ArrayList<Comment> mComm = new ArrayList<>();
     Context mContext = null;
-    private int stanje = 0;
+    private int user;
     private Comment comment;
     private TextView textView;
-    private HelperDatabaseRead helperDatabaseRead;
+    private CRUD CRUD;
+
     public CommentAdapter(Context context, ArrayList<Comment> comments){
         super(context,0,comments);
+        SharedPreferences pref = context.getSharedPreferences("mPref", 0);
+        int idUser = pref.getInt("id", -1);
+        user=idUser;
         this.mContext= context;
     }
     @Override
@@ -36,12 +43,14 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         if(view == null){
             view = LayoutInflater.from(getContext()).inflate(R.layout.comment_layout,viewGroup,false);
         }
-
+        final View currentView = view;
         TextView author_view = view.findViewById(R.id.authorComm);
         TextView desc_view = view.findViewById(R.id.desc_comm);
         TextView like_view = view.findViewById(R.id.likeComm);
         TextView dislike_view = view.findViewById(R.id.dislkeComm);
         TextView date_view=view.findViewById(R.id.date_comm_);
+        TextView title_view = view.findViewById(R.id.title_comm);
+        title_view.setText(comment.getTitle());
         author_view.setText(comment.getAuthor().getName());
         desc_view.setText(comment.getDescription());
         String sl=String.valueOf(comment.getLikes());
@@ -51,46 +60,21 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         String sDate= dateFormat.format(comment.getDate());
         date_view.setText(sDate);
-        likesAndDislikes(view);
-
-         return view;
-    }
-
-    public void likesAndDislikes(final View view){
 
         ImageButton button = (ImageButton) view.findViewById(R.id.likeBtnComm);
         button.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                switch (stanje){
-                    case 0:
-                        comment.setLikes(comment.getLikes()+1);
-                        stanje=1;
-                        helperDatabaseRead = new HelperDatabaseRead();
+                if(user != comment.getAuthor().getId()){
 
-                        helperDatabaseRead.updateComment(comment, (Activity) mContext,null,null);
-                        textView=(TextView)view.findViewById(R.id.likeComm);
-                        textView.setText(String.valueOf(comment.getLikes()));
-                        break;
-                    case 1:
-                        comment.setLikes(comment.getLikes()-1);
-                        stanje=0;
-                        helperDatabaseRead = new HelperDatabaseRead();
-                        helperDatabaseRead.updateComment(comment,(Activity) mContext,null,null);
-                        textView=(TextView)view.findViewById(R.id.likeComm);
-                        textView.setText(String.valueOf(comment.getLikes()));
-                        break;
-                    case -1:
-                        comment.setLikes(comment.getLikes()+1);
-                        comment.setDislikes(comment.getDislikes()-1);
-                        stanje=1;
-                        helperDatabaseRead = new HelperDatabaseRead();
-                        helperDatabaseRead.updateComment(comment,(Activity) mContext,null,null);
-                        textView=(TextView)view.findViewById(R.id.likeComm);
-                        textView.setText(String.valueOf(comment.getLikes()));
-                        textView=(TextView)view.findViewById(R.id.dislkeComm);
-                        textView.setText(String.valueOf(comment.getDislikes()));
-                        break;
+
+                comment.setLikes(comment.getLikes()+1);
+                CRUD = new CRUD();
+                CRUD.updateComment(comment, (Activity) mContext,null,null);
+                update(currentView,comment);
+
+                }else{
+                    Toast.makeText(mContext, "You cant like your comment!", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -99,42 +83,40 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         button2.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                switch (stanje){
-                    case 0:
-                        comment.setDislikes(comment.getDislikes()+1);
-                        stanje=-1;
-                        helperDatabaseRead = new HelperDatabaseRead();
-                        helperDatabaseRead.updateComment(comment,(Activity) mContext,null,null);
+                if(user != comment.getAuthor().getId()){
+                comment.setDislikes(comment.getDislikes()+1);
+                CRUD = new CRUD();
+                CRUD.updateComment(comment,(Activity) mContext,null,null);
+                    update(currentView,comment);
+                }else{
+                    Toast.makeText(mContext, "You cant dislike your comment!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        ImageButton deleteComm=view.findViewById(R.id.deleteComm);
+        deleteComm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(user == comment.getAuthor().getId()){
+                    Uri uri = Uri.withAppendedPath(CommentContract.CommentEntry.CONTENT_URI, String.valueOf(comment.getId()));
+                    mContext.getContentResolver().delete(uri, null, null);
 
-                        textView=(TextView)view.findViewById(R.id.dislkeComm);
-                        textView.setText(String.valueOf(comment.getDislikes()));
-                        break;
-                    case 1:
-                        comment.setLikes(comment.getLikes()-1);
-                        comment.setDislikes(comment.getDislikes()+1);
-                        stanje=-1;
-                        helperDatabaseRead = new HelperDatabaseRead();
-                        helperDatabaseRead.updateComment(comment,(Activity) mContext,null,null);
-                        textView=(TextView)view.findViewById(R.id.likeComm);
-                        textView.setText(String.valueOf(comment.getLikes()));
-                        textView=(TextView)view.findViewById(R.id.dislkeComm);
-                        textView.setText(String.valueOf(comment.getDislikes()));
-                        break;
-                    case -1:
 
-                        comment.setDislikes(comment.getDislikes()-1);
-                        stanje=0;
-                        helperDatabaseRead = new HelperDatabaseRead();
-                        helperDatabaseRead.updateComment(comment,(Activity) mContext,null,null);
-
-                        textView=(TextView)view.findViewById(R.id.dislkeComm);
-                        textView.setText(String.valueOf(comment.getDislikes()));
-                        break;
+                }else{
+                    Toast.makeText(mContext, "You can delete just your comment, noob!", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
 
 
+         return view;
+    }
+
+    private void update(View view,Comment comment){
+        TextView likes = view.findViewById(R.id.likeComm);
+        TextView dislikes = view.findViewById(R.id.dislkeComm);
+        likes.setText(String.valueOf(comment.getLikes()));
+        dislikes.setText(String.valueOf(comment.getDislikes()));
     }
 }
